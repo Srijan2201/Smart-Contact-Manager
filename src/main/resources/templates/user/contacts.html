@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" th:replace="~{base ::parent(~{::#content},~{::title},~{::script})}">
+<head>
+    <title>All Your Contacts</title>
+</head>
+<body>
+    <div  id="content">
+
+            <!-- user is logged in: sidebar -->
+
+    <div th:if="${loggedInUser}">
+        <div data-th-replace="~{user/sidebar :: sidebar}">
+
+        </div>
+    </div>
+
+    <div class="sm:pl-64 pt-20">
+        <div class="">
+            <h1 class="text-center" style="font-size: 3rem;">All Your Contacts</h1>
+            <p class="text-center">List of all contacts</p>
+
+            <div class="contacts_container p-5">
+
+                
+
+<div class="relative overflow-x-auto bg-neutral-primary-soft shadow-xs rounded-base border border-default">
+    <div data-th-replace="~{message :: messagebox}"></div>
+    <form data-th-object="${contactSearchForm}" action="" data-th-action="@{'/user/contacts/search'}">
+
+        <div class="flex space-x-3 items-center justify-start flex-column flex-wrap md:flex-row space-y-3 md:space-y-0 p-4">
+        
+        <div>
+            
+  <select data-th-field="*{field}" id="countries_disabled" class="block w-full bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand px-4 py-2.5 shadow-xs text-fg-disabled">
+    <option selected value="">Select Field</option>
+    <option value="name">Name</option>
+    <option value="phone">Phone</option>
+    <option value="email">Email</option>
+  </select>
+        </div>
+        <label for="input-group-1" class="sr-only">Search</label>
+        <div class="relative">
+            <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                <svg class="w-4 h-4 text-body" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/></svg>
+            </div>
+            <input data-th-field="*{value}" type="text" name="keyword" id="input-group-1" class="block w-full max-w-96 ps-9 pe-3 py-2 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body" placeholder="Search for users">
+        </div>
+        <button class="px-3 py-2 text-white rounded" style="background-color: black;">Search</button>
+    </div>
+
+    </form>
+    <table data-th-if="${pageContact.totalElements>0}" class="w-full text-sm text-left rtl:text-right text-body">
+        <thead class="text-sm text-body bg-neutral-secondary-medium border-b border-t border-default-medium">
+            <tr>
+                
+                <th scope="col" class="px-6 py-3 font-medium">
+                    Name
+                </th>
+                <th scope="col" class="px-6 py-3 font-medium">
+                    Phone
+                </th>
+                <th scope="col" class="px-6 py-3 font-medium">
+                    Links
+                </th>
+                <th scope="col" class="px-6 py-3 font-medium">
+                    Action
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr
+            data-th-object="${c}"
+            data-th-each="c : ${pageContact.getContent()}"
+            class="bg-neutral-primary-soft border-b border-default hover:bg-neutral-secondary-medium">
+                
+                <th scope="row" class="flex items-center px-6 py-4 text-heading whitespace-nowrap">
+                    <img 
+  onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\'%3E%3Ccircle cx=\'12\' cy=\'8\' r=\'4\' fill=\'%23aaa\'/%3E%3Cpath d=\'M4 20c0-4 3.6-7 8-7s8 3 8 7\' fill=\'%23aaa\'/%3E%3C/svg%3E'" 
+  class="w-10 h-10 rounded-full bg-gray-200" 
+  data-th-src="@{*{picture}}" 
+  alt="contact image"
+/>
+                    <div class="ps-3">
+                        <div class="text-base font-semibold" data-th-text="*{name}">Neil Sims</div>
+                        <div class="font-normal text-gray-500" data-th-text="*{email}">neil.sims@flowbite.com</div>
+                    </div>  
+                </th>
+                <td class="px-6 py-4">
+                    <i class="fa-solid fa-phone w-4 h-4"></i>
+                    <span data-th-text="*{phoneNumber}"></span>
+                </td>
+                <td class="px-6 py-4">
+                    <div class="flex items-center">
+                        <div data-th-if="*{favourite}" class="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div>
+                        <a data-th-href="@{*{websiteLink}}" target="_blank"><i class="fa-solid fa-link w-6 h-6"></i></a>
+                        <a data-th-href="@{*{linkedInLink}}" target="_blank"><i class="fa-brands fa-linkedin w-6 h-6"></i></a>
+                    </div>
+                </td>
+                <td class="px-6 py-4">
+                    <!-- <a data-th-href="@{'/user/contacts/delete/'+*{id}}"><i class="fa-solid w-6 h-6 fa-trash"></i></a> -->
+                    
+                    <!-- delete contact -->
+                    <button th:onclick="deleteContact([[${c.id}]])"><i class="fa-solid w-6 h-6 fa-trash"></i></button>
+                    
+                    <!-- update contact -->
+                    <a data-th-href="@{'/user/contacts/view/'+*{id}}"><i class="fa-solid w-6 h-6 fa-pen"></i></a>
+
+                    <!-- view contact -->
+                    <button th:onclick="loadContactdata([[${c.id}]])"><i class="fa-solid w-6 h-6 fa-eye"></i></button>
+                    <!-- <a href="#" class="font-medium text-fg-brand hover:underline">Edit user</a> -->
+                </td>
+            </tr>
+            
+        </tbody>
+    </table>
+
+    <!-- pagination -->
+     <div data-th-if="${pageContact.totalElements>0}" class="pagination_container p-5 text-center">
+
+        <nav aria-label="Page navigation example">
+  <ul class="flex justify-center -space-x-px text-sm">
+    <li data-th-unless="${pageContact.first}">
+      <a data-th-href="@{'/user/contacts?size='+${pageSize}+'&page=' + ${pageContact.number-1}}" class="flex items-center justify-center text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading font-medium rounded-s-base text-sm px-3 h-10 focus:outline-none">Previous</a>
+    </li>
+    <li data-th-each="index : ${#numbers.sequence(0,pageContact.totalPages-1)}">
+        <a data-th-href="@{'/user/contacts?size='+${pageSize}+'&page='+${index}}" 
+   href="#" 
+   data-th-classappend="${index==pageContact.number? 'bg-blue-600 text-white border-blue-600' : ''}" 
+   class="flex items-center justify-center text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading font-medium text-sm w-10 h-10 focus:outline-none">
+   <span data-th-text="${index +1}"></span>
+</a>
+    </li>
+    
+    <li data-th-unless="${pageContact.last}">
+      <a data-th-href="@{'/user/contacts?size='+${pageSize}+'&page=' + ${pageContact.number+1}}" class="flex items-center justify-center text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading font-medium rounded-e-base text-sm px-3 h-10 focus:outline-none">Next</a>
+    </li>
+  </ul>
+</nav>
+
+     </div>
+          <h1 class="text-5xl text-center bg-white" data-th-if="${pageContact.totalElements<=0}">No Result Found</h1>
+
+</div>
+
+
+            </div>
+
+        </div>
+        <div data-th-replace="~{user/contact_modals :: contact}"></div> 
+    </div>
+    </div>
+    <script data-th-src="@{/js/contacts.js}"></script>
+    <script>
+        console.log("this is a dashboard page");
+    </script>
+    
+</body>
+</html>
